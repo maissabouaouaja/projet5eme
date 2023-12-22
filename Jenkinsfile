@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Spécifiez l'outil Docker avec le chemin
-        dockerTool 'Docker' // Assurez-vous que 'Docker' correspond à l'outil configuré dans Jenkins
-    }
-
     environment {
         // Initialisez vos variables globales ici
         IMAGE_NAME = 'votre_image'
