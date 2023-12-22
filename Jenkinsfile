@@ -8,6 +8,13 @@ pipeline {
     }
 
     stages {
+        stage('Checkout SCM') {
+            steps {
+                echo 'Checking out SCM'
+                checkout scm
+            }
+        }
+
         stage('Initialization') {
             steps {
                 echo 'Initializing global variables'
@@ -36,10 +43,12 @@ pipeline {
                 echo 'Pushing the application image to DockerHub'
                 // Assurez-vous que vous avez déjà effectué docker login avant cette étape
                 script {
-                    docker.build("$DOCKER_HUB_REGISTRY/$IMAGE_NAME")
-                    docker.withRegistry("https://registry.hub.docker.com", "docker-hub-credentials") {
-                        docker.push("$DOCKER_HUB_REGISTRY/$IMAGE_NAME")
-                    }
+                    // Configuration de l'environnement Docker
+                    def dockerHome = tool 'docker'
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+
+                    sh 'docker build -t $DOCKER_HUB_REGISTRY/$IMAGE_NAME .'
+                    sh 'docker push $DOCKER_HUB_REGISTRY/$IMAGE_NAME'
                 }
             }
         }
