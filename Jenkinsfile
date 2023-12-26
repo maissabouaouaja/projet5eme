@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Initialisez vos variables globales ici
-        IMAGE_NAME = 'votre_nouvelle_image:version'
+        IMAGE_NAME = 'votre_image'
         DOCKER_HUB_REGISTRY = 'maissabouaouja'
     }
 
