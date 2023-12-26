@@ -42,14 +42,13 @@ pipeline {
             steps {
                 echo 'Pushing the application image to DockerHub'
                 // Assurez-vous que vous avez déjà effectué docker login avant cette étape
-               script {
-    def dockerHome = tool 'docker'
-    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                script {
+                    def dockerHome = tool 'docker'
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
 
-    sh 'docker build -t $DOCKER_HUB_REGISTRY/$IMAGE_NAME .'
-    sh 'docker push $DOCKER_HUB_REGISTRY/$IMAGE_NAME'
-}
-
+                    sh 'docker build -t $DOCKER_HUB_REGISTRY/$IMAGE_NAME .'
+                    sh 'docker push $DOCKER_HUB_REGISTRY/$IMAGE_NAME'
+                }
             }
         }
 
