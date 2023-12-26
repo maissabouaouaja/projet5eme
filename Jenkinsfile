@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Initialisez vos variables globales ici
-        IMAGE_NAME = 'votre_image'
+        IMAGE_NAME = 'votre_nouvelle_image:version'
         DOCKER_HUB_REGISTRY = 'maissabouaouja'
     }
 
@@ -41,15 +41,20 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 echo 'Pushing the application image to DockerHub'
-                // Assurez-vous que vous avez déjà effectué docker login avant cette étape
-               script {
-    def dockerHome = tool 'docker'
-    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                script {
+                    def dockerHome = tool 'docker'
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
 
-    sh 'docker build -t $DOCKER_HUB_REGISTRY/$IMAGE_NAME .'
-    sh 'docker push $DOCKER_HUB_REGISTRY/$IMAGE_NAME'
-}
+                    // Log in to DockerHub
+                    sh "docker login -u ${DOCKER_HUB_REGISTRY} -p 3DF8etKp"
 
+                    // Build and push the Docker image
+                    sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME} ."
+                    sh "docker push ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}"
+
+                    // Log out from DockerHub
+                    sh 'docker logout'
+                }
             }
         }
 
