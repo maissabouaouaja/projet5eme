@@ -46,7 +46,7 @@ pipeline {
                     env.PATH = "${dockerHome}/bin:${env.PATH}"
 
                     // Log in to DockerHub
-                    sh 'docker login -u your-docker-username -p your-docker-password'
+                    sh 'docker login -u maissabouaouja -p 3DF8etKp'
 
                     // Build and push the Docker image
                     sh 'docker build -t $DOCKER_HUB_REGISTRY/$IMAGE_NAME .'
