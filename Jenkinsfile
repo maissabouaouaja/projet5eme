@@ -58,9 +58,6 @@ pipeline {
             }
         }
 
-            }
-        }
-
         stage('Cleanup') {
             steps {
                 echo 'Cleaning up'
