@@ -25,7 +25,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dh_cred', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
                     script {
                         // Export des variables pour utilisation dans les autres étapes
-                        env.DOCKER_HUB_REGISTRY = DOCKER_HUB_USERNAME
+                        env.DOCKER_HUB_REGISTRY = env.DOCKER_HUB_USERNAME
                     }
                 }
             }
@@ -39,6 +39,7 @@ pipeline {
 
                 // Build de l'image Docker en utilisant les variables récupérées
                 script {
+                    def dockerHome = tool 'docker'
                     env.PATH = "${dockerHome}/bin:${env.PATH}"
                     sh "docker build -t ${env.DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID} ."
                 }
