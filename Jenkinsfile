@@ -91,3 +91,4 @@ post {
         echo 'Pipeline finished'
     }
 }
+}
