@@ -72,7 +72,7 @@ pipeline {
 
         stage('Deploy to other environment') {
             steps {
-                echo 'Deploying the application to other environment'
+                echo 'Deploying the application to another environment'
                 // Ajoutez ici les commandes de déploiement de votre application
                 // Exemple : aws ecs run-task pour un déploiement sur AWS
             }
