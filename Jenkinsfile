@@ -2,74 +2,73 @@ pipeline {
     agent any
 
     environment {
-        // Initialisez vos variables globales ici
+        // Variables globales
         IMAGE_NAME = 'votre_nouvelle_image:version'
         DOCKER_HUB_REGISTRY = 'maissabouaouja'
+        DOCKER_HUB_PASSWORD = credentials('maissa123')
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Initialisation des variables globales') {
             steps {
-                echo 'Checking out SCM'
-                checkout scm
-            }
-        }
-
-        stage('Initialization') {
-            steps {
-                echo 'Initializing global variables'
-                // Vous pouvez ajouter ici des commandes d'initialisation de variables globales
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo 'Building the application'
-                // Ajoutez ici les commandes de build de votre application
-                // Exemple : mvn clean install pour un projet Java avec Maven
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests'
-                // Ajoutez ici les commandes de test de votre application
-                // Exemple : mvn test pour un projet Java avec Maven
-            }
-        }
-
-        stage('Push to DockerHub') {
-            steps {
-                echo 'Pushing the application image to DockerHub'
                 script {
-                    def dockerHome = tool 'docker'
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
-
-                    // Log in to DockerHub
-                    sh "docker login -u ${DOCKER_HUB_REGISTRY} -p maissa123"
-
-                    // Build and push the Docker image
-                    sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME} ."
-                    sh "docker push ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}"
-
-                    // Log out from DockerHub
-                    sh 'docker logout'
+                    echo "Initialisation des variables globales..."
+                    // Vous pouvez ajouter ici d'autres initialisations de variables globales si nécessaire
                 }
             }
         }
 
-        stage('Cleanup') {
+        stage('Build de l\'image Docker') {
             steps {
-                echo 'Cleaning up'
-                // Ajoutez ici les commandes de nettoyage après le déploiement
-                // Exemple : supprimer les artefacts temporaires ou les conteneurs inutiles
+                script {
+                    echo "Construction de l'image Docker..."
+                    // Assurez-vous que Docker est installé sur votre agent Jenkins
+                    sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME} ."
+                }
+            }
+        }
+
+        stage('Tests unitaires ou d\'intégration') {
+            steps {
+                script {
+                    echo "Exécution des tests unitaires ou d'intégration..."
+                    // Ajoutez ici vos commandes pour exécuter les tests
+                }
+            }
+        }
+
+        stage('Login au registre Docker Hub') {
+            steps {
+                script {
+                    echo "Connexion au registre Docker Hub..."
+                    // Vous pouvez utiliser la variable d'environnement pour le mot de passe sécurisé
+                    sh "docker login -u ${DOCKER_HUB_REGISTRY} -p ${DOCKER_HUB_PASSWORD}"
+                }
+            }
+        }
+
+        stage('Push de l\'image vers Docker Hub') {
+            steps {
+                script {
+                    echo "Pousser l'image vers Docker Hub..."
+                    sh "docker push ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}"
+                }
+            }
+        }
+
+        stage('Nettoyage') {
+            steps {
+                script {
+                    echo "Nettoyage si nécessaire..."
+                    // Ajoutez ici des commandes pour le nettoyage si nécessaire
+                }
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline finished'
+            // Ajoutez ici des étapes à exécuter toujours, par exemple, nettoyer les ressources temporaires
         }
     }
 }
