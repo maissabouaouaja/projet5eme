@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: votre-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: votre-app
+  template:
+    metadata:
+      labels:
+        app: votre-app
+    spec:
+      containers:
+        - name: votre-container
+          image: maissabouaouaja/votre_nouvelle_image

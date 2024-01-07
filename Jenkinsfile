@@ -65,6 +65,15 @@ pipeline {
             }
         }
     }
+    stage('Déploiement sur Kubernetes') {
+    steps {
+        script {
+            def kubernetesNamespace = 'votre_namespace'
+            sh "kubectl apply -f k8s -n $kubernetesNamespace"
+        }
+    }
+}
+
 
     post {
         always {
