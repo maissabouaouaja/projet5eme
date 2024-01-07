@@ -23,7 +23,7 @@ checkout scm
 stage('Initialization') {
     steps {
         echo 'Initializing global variables'
-        withCredentials([usernamePassword(credentialsId: 'missabouaouja', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+        withCredentials([usernamePassword(credentialsId: 'maissabouaouja', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
             script {
                 // Export des variables pour utilisation dans les autres étapes
                 sh "export DOCKER_HUB_REGISTRY=${DOCKER_HUB_USERNAME}"
