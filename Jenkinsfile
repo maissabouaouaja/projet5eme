@@ -39,8 +39,10 @@ stages {
             // Exemple : mvn clean install pour un projet Java avec Maven
 
             // Build de l'image Docker en utilisant les variables récupérées
-            env.PATH = "${dockerHome}/bin:${env.PATH}"
-            sh "docker build -t ${env.DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID} ."
+            script {
+                env.PATH = "${dockerHome}/bin:${env.PATH}"
+                sh "docker build -t ${env.DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID} ."
+            }
         }
     }
 
