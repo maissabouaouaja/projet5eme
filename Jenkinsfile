@@ -1,76 +1,76 @@
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        // Initialisez vos variables globales ici
-        IMAGE_NAME = 'votre_image'  // Ajustez le nom de l'image si nécessaire
-        // Les credentials DockerHub seront récupérés à partir de la variable d'authentification
+  environment {
+    // Initialisez vos variables globales ici
+    IMAGE_NAME = 'votre_image'  // Ajustez le nom de l'image si nécessaire
+    // Les credentials DockerHub seront récupérés à partir de la variable d'authentification
+  }
+
+  triggers {
+    pollSCM('*/5 * * * *')  // Vérifier toutes les 5 minutes
+  }
+
+  stages {
+    stage('Checkout SCM') {
+      agent any
+      steps {
+        echo 'Checking out SCM'
+        checkout scm
+      }
     }
 
-    triggers {
-        pollSCM('*/5 * * * *')  // Vérifier toutes les 5 minutes
+    stage('Initialization') {
+      steps {
+        echo 'Initializing global variables'
+        // Récupération des credentials DockerHub à partir de la variable d'authentification
+        withCredentials([usernamePassword(credentialsId: 'dh_cred', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+          // Export des variables pour utilisation dans les autres étapes
+          sh "env.DOCKER_HUB_REGISTRY = ${DOCKER_HUB_USERNAME}"
+        }
+      }
     }
 
-    stages {
-        stage('Checkout SCM') {
-            agent any
-            steps {
-                echo 'Checking out SCM'
-                checkout scm
-            }
-        }
+    stage('Build') {
+      steps {
+        echo 'Building the application'
+        // Ajoutez ici les commandes de build de votre application
+        // Exemple : mvn clean install pour un projet Java avec Maven
 
-        stage('Initialization') {
-            steps {
-                echo 'Initializing global variables'
-                // Récupération des credentials DockerHub à partir de la variable d'authentification
-                withCredentials([usernamePassword(credentialsId: 'dh_cred', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                    // Export des variables pour utilisation dans les autres étapes
-                    env.DOCKER_HUB_REGISTRY = "${DOCKER_HUB_USERNAME}"
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo 'Building the application'
-                // Ajoutez ici les commandes de build de votre application
-                // Exemple : mvn clean install pour un projet Java avec Maven
-
-                // Build de l'image Docker en utilisant les variables récupérées
-                sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID ."
-            }
-        }
-
-        stage('Push to DockerHub') {
-            steps {
-                echo 'Pushing the application image to DockerHub'
-                script {
-                    def dockerHome = tool 'docker'
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
-
-                    // Authentification à DockerHub en utilisant les variables récupérées
-                    sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
-
-                    // Push de l'image Docker
-                    sh "docker push ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID"
-                }
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                echo 'Cleaning up'
-                // Suppression de l'image locale et déconnexion de DockerHub
-                sh "docker rmi ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID"
-                sh 'docker logout'
-            }
-        }
+        // Build de l'image Docker en utilisant les variables récupérées
+        sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID ."
+      }
     }
 
-    post {
-        always {
-            echo 'Pipeline finished'
+    stage('Push to DockerHub') {
+      steps {
+        echo 'Pushing the application image to DockerHub'
+        script {
+          def dockerHome = tool 'docker'
+          env.PATH = "${dockerHome}/bin:${env.PATH}"
+
+          // Authentification à DockerHub en utilisant les variables récupérées
+          sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
+
+          // Push de l'image Docker
+          sh "docker push ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID"
         }
+      }
     }
+
+    stage('Cleanup') {
+      steps {
+        echo 'Cleaning up'
+        // Suppression de l'image locale et déconnexion de DockerHub
+        sh "docker rmi ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID"
+        sh 'docker logout'
+      }
+    }
+  }
+
+  post {
+    always {
+      echo 'Pipeline finished'
+    }
+  }
 }
