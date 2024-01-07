@@ -39,7 +39,7 @@ pipeline {
                 // Exemple : mvn clean install pour un projet Java avec Maven
 
                 // Build de l'image Docker en utilisant les variables récupérées
-                sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID ."
+                sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID} ."
             }
         }
 
@@ -62,7 +62,7 @@ pipeline {
                     sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
 
                     // Push de l'image Docker
-                    sh "docker push ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID"
+                    sh "docker push ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID}"
                 }
             }
         }
@@ -79,7 +79,7 @@ pipeline {
             steps {
                 echo 'Cleaning up'
                 // Suppression de l'image locale et déconnexion de DockerHub
-                sh "docker rmi ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:$BUILD_ID"
+                sh "docker rmi ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID}"
                 sh 'docker logout'
             }
         }
