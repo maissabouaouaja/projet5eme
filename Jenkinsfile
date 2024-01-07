@@ -40,8 +40,9 @@ pipeline {
 
                 // Build de l'image Docker en utilisant les variables récupérées
                 script(DOCKER_HUB_REGISTRY: env.DOCKER_HUB_REGISTRY) {
-                    sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID} ."
-                }
+    // Build commands using the DOCKER_HUB_REGISTRY variable
+    sh "docker build -t ${DOCKER_HUB_REGISTRY}/${IMAGE_NAME}:${BUILD_ID} ."
+}
             }
         }
 
