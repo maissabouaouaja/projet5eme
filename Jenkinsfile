@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    parameters {
+        string(name: 'K8S_NAMESPACE', defaultValue: 'default', description: 'Kubernetes namespace')
+        string(name: 'BRANCH_NAME', defaultValue: '', description: 'Git branch name')
+    }
     environment {
         // Variables globales
         IMAGE_NAME = 'votre_nouvelle_image:version'
@@ -56,24 +59,25 @@ pipeline {
             }
         }
 
+        stage('Déploiement sur Kubernetes') {
+            steps {
+                script {
+                    def kubernetesNamespace = params.K8S_NAMESPACE
+                    sh "kubectl apply -f k8s -n $kubernetesNamespace"
+                    sh "kubectl rollout status deployment <deployment> -n $kubernetesNamespace"
+                }
+            }
+        }
+
         stage('Nettoyage') {
             steps {
                 script {
                     echo "Nettoyage si nécessaire..."
-                    // Ajoutez ici des commandes pour le nettoyage si nécessaire
+                    sh "kubectl delete -f k8s -n $kubernetesNamespace"
                 }
             }
         }
     }
-    stage('Déploiement sur Kubernetes') {
-    steps {
-        script {
-            def kubernetesNamespace = 'votre_namespace'
-            sh "kubectl apply -f k8s -n $kubernetesNamespace"
-        }
-    }
-}
-
 
     post {
         always {
