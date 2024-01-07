@@ -11,6 +11,9 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
+                    // Ajouter cette étape pour afficher le chemin d'accès à Docker
+                    sh 'which docker'
+
                     // Utilisation des informations d'identification Docker
                     withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dh_cred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
                         
