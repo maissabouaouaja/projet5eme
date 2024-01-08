@@ -24,7 +24,7 @@ pipeline {
                 // Check if 'docker' command is available
                 script {
                     def dockerCommand = isUnix() ? 'docker' : 'docker.exe'
-                    if (!isExecutable(command: dockerCommand)) {
+                    if (which(dockerCommand) == null) {
                         error "Docker is not installed or not available in PATH"
                     }
                     
