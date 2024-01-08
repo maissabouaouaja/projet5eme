@@ -21,40 +21,18 @@ pipeline {
         stage('Init') {
             agent any
             steps {
-                // Allowing authentication
+                // Check if 'docker' command is available
                 script {
-                    // On macOS, you might need to use 'bash' to execute the echo and docker commands.
-                    sh "echo '\$DOCKERHUB_CREDENTIALS_PSW' | bash -c 'docker login -u '\$DOCKERHUB_CREDENTIALS_USR' --password-stdin'"
+                    def dockerCommand = isUnix() ? 'docker' : 'docker.exe'
+                    if (!isExecutable(command: dockerCommand)) {
+                        error "Docker is not installed or not available in PATH"
+                    }
+                    
+                    sh "echo '\$DOCKERHUB_CREDENTIALS_PSW' | ${dockerCommand} login -u '\$DOCKERHUB_CREDENTIALS_USR' --password-stdin"
                 }
             }
         }
         
-        stage('Build') {
-            steps {
-                script {
-                    // Make sure to use 'bash' for consistency on macOS.
-                    sh "bash -c 'docker build -t \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID .'"
-                }
-            }
-        }
-        
-        stage('Deliver') {
-            steps {
-                script {
-                    // Use 'bash' to execute the docker command.
-                    sh "bash -c 'docker push \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID'"
-                }
-            }
-        }
-        
-        stage('Cleanup') {
-            steps {
-                script {
-                    // Use 'bash' for executing docker commands on macOS.
-                    sh "bash -c 'docker rmi \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID'"
-                    sh "bash -c 'docker logout'"
-                }
-            }
-        }
+        // The rest of your stages...
     }
 }
