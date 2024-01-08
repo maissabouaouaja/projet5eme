@@ -6,7 +6,7 @@ pipeline {
     }
     environment {
         // Variables globales
-        IMAGE_NAME = 'votre_nouvelle_image:version'
+        IMAGE_NAME = 'votre image'
         DOCKER_HUB_REGISTRY = 'maissabouaouja'
         DOCKER_HUB_PASSWORD = credentials('maissa123')
     }
