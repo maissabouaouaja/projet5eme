@@ -6,9 +6,10 @@ pipeline {
     }
     environment {
         // Variables globales
-        IMAGE_NAME = 'votre image'
+        IMAGE_NAME = 'votre_image'  // Correction : remplacez l'espace par un underscore dans le nom de l'image
         DOCKER_HUB_REGISTRY = 'maissabouaouja'
         DOCKER_HUB_PASSWORD = credentials('maissa123')
+        KUBECONFIG = "${JENKINS_HOME}/.kube/config"  // Ajout : spécifiez le chemin du fichier de configuration kubeconfig
     }
 
     stages {
@@ -63,8 +64,9 @@ pipeline {
             steps {
                 script {
                     def kubernetesNamespace = params.K8S_NAMESPACE
-                    sh "kubectl apply -f k8s -n $kubernetesNamespace"
-                    sh "kubectl rollout status deployment <deployment> -n $kubernetesNamespace"
+                    echo "Déploiement sur le namespace Kubernetes : ${kubernetesNamespace}"
+                    sh "kubectl --kubeconfig=${KUBECONFIG} apply -f k8s -n $kubernetesNamespace"  // Modification : utilisez un chemin absolu pour kubeconfig
+                    sh "kubectl --kubeconfig=${KUBECONFIG} rollout status deployment <deployment> -n $kubernetesNamespace"  // Modification : remplacez <deployment> par le nom de votre déploiement
                 }
             }
         }
@@ -73,7 +75,7 @@ pipeline {
             steps {
                 script {
                     echo "Nettoyage si nécessaire..."
-                    sh "kubectl delete -f k8s -n $kubernetesNamespace"
+                    sh "kubectl --kubeconfig=${KUBECONFIG} delete -f k8s -n $kubernetesNamespace"
                 }
             }
         }
