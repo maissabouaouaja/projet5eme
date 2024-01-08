@@ -23,7 +23,8 @@ pipeline {
             steps {
                 // Allowing authentication
                 script {
-                    sh "echo '\$DOCKERHUB_CREDENTIALS_PSW' | docker login -u '\$DOCKERHUB_CREDENTIALS_USR' --password-stdin"
+                    // On macOS, you might need to use 'bash' to execute the echo and docker commands.
+                    sh "echo '\$DOCKERHUB_CREDENTIALS_PSW' | bash -c 'docker login -u '\$DOCKERHUB_CREDENTIALS_USR' --password-stdin'"
                 }
             }
         }
@@ -31,7 +32,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh "docker build -t \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID ."
+                    // Make sure to use 'bash' for consistency on macOS.
+                    sh "bash -c 'docker build -t \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID .'"
                 }
             }
         }
@@ -39,7 +41,8 @@ pipeline {
         stage('Deliver') {
             steps {
                 script {
-                    sh "docker push \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID"
+                    // Use 'bash' to execute the docker command.
+                    sh "bash -c 'docker push \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID'"
                 }
             }
         }
@@ -47,8 +50,9 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    sh "docker rmi \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID"
-                    sh "docker logout"
+                    // Use 'bash' for executing docker commands on macOS.
+                    sh "bash -c 'docker rmi \$DOCKERHUB_CREDENTIALS_USR/image:\$BUILD_ID'"
+                    sh "bash -c 'docker logout'"
                 }
             }
         }
