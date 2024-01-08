@@ -8,8 +8,10 @@ pipeline {
         // Variables globales
         IMAGE_NAME = 'votre_image'  // Correction : remplacez l'espace par un underscore dans le nom de l'image
         DOCKER_HUB_REGISTRY = 'maissabouaouja'
-        DOCKER_HUB_PASSWORD = credentials('maissa123')
-        KUBECONFIG = "${JENKINS_HOME}/.kube/config"  // Ajout : spécifiez le chemin du fichier de configuration kubeconfig
+        KUBECONFIG = "${JENKINS_HOME}/.kube/config"  // Ajout : spécifiez le chemin absolu du fichier de configuration kubeconfig
+
+        // Utilisez le plugin Credentials pour définir les informations d'identification Docker Hub
+        DOCKER_HUB_CREDENTIALS = credentials('maissa123')
     }
 
     stages {
@@ -17,7 +19,7 @@ pipeline {
             steps {
                 script {
                     echo "Initialisation des variables globales..."
-                    // Vous pouvez ajouter ici d'autres initialisations de variables globales si nécessaire
+                    // Ajoutez ici d'autres initialisations de variables globales si nécessaire
                 }
             }
         }
@@ -45,8 +47,8 @@ pipeline {
             steps {
                 script {
                     echo "Connexion au registre Docker Hub..."
-                    // Vous pouvez utiliser la variable d'environnement pour le mot de passe sécurisé
-                    sh "docker login -u ${DOCKER_HUB_REGISTRY} -p ${DOCKER_HUB_PASSWORD}"
+                    // Utilisez les informations d'identification Docker Hub
+                    sh "docker login -u ${DOCKER_HUB_REGISTRY} -p ${DOCKER_HUB_CREDENTIALS}"
                 }
             }
         }
