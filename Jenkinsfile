@@ -65,8 +65,8 @@ pipeline {
                 script {
                     def kubernetesNamespace = params.K8S_NAMESPACE
                     echo "Déploiement sur le namespace Kubernetes : ${kubernetesNamespace}"
-                    sh "kubectl --kubeconfig=${KUBECONFIG} apply -f k8s -n $kubernetesNamespace"  // Modification : utilisez un chemin absolu pour kubeconfig
-                    sh "kubectl --kubeconfig=${KUBECONFIG} rollout status deployment <deployment> -n $kubernetesNamespace"  // Modification : remplacez <deployment> par le nom de votre déploiement
+                    sh "kubectl --kubeconfig=${KUBECONFIG} apply -f k8s -n $kubernetesNamespace"
+                    sh "kubectl --kubeconfig=${KUBECONFIG} rollout status deployment <deployment> -n $kubernetesNamespace"
                 }
             }
         }
@@ -83,7 +83,10 @@ pipeline {
 
     post {
         always {
-            // Ajoutez ici des étapes à exécuter toujours, par exemple, nettoyer les ressources temporaires
+            script {
+                echo "Étapes à exécuter toujours..."
+                // Ajoutez ici des étapes à exécuter toujours, par exemple, nettoyer les ressources temporaires
+            }
         }
     }
 }
